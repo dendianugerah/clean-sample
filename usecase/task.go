@@ -44,7 +44,22 @@ func (tu *taskUsecase) FindByID(id int) (*model.Task, error) {
 }
 
 func (tu *taskUsecase) Update(id, user_id int, title, content string) (*model.Task, error) {
+	targetTask, err := tu.taskRepository.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
 
+	err = targetTask.Set(title, content)
+	if err != nil {
+		return nil, err
+	}
+
+	updatedTask, err := tu.taskRepository.Update(targetTask)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedTask, nil
 }
 
 func (tu *taskUsecase) Delete(id int) error {
