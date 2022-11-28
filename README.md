@@ -8,6 +8,7 @@ File structure:
 ├── main
 │   ├── config
 │   │   ├── connection.go
+│   ├── docs: swaggo docs
 │   ├── domain
 │   │   ├── model: this is where the domain model is defined
 │   │   │   ├── example.go
