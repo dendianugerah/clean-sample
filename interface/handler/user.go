@@ -11,6 +11,9 @@ import (
 type UserHandler interface {
 	CreateUser() echo.HandlerFunc
 	GetUser() echo.HandlerFunc
+	GetAll() echo.HandlerFunc
+	UpdateUser() echo.HandlerFunc
+	DeleteUser() echo.HandlerFunc
 }
 
 type userHandler struct {
@@ -92,5 +95,48 @@ func (uh *userHandler) GetAll() echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, res)
+	}
+}
+
+func (uh *userHandler) UpdateUser() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+		var req reqUser
+		err = c.Bind(&req)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+		updateUser, err := uh.userUsecase.Update(id, req.Username)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+		res := responseUser{
+			ID:       updateUser.ID,
+			Username: updateUser.Username,
+		}
+
+		return c.JSON(http.StatusOK, res)
+	}
+}
+
+func (uh *userHandler) DeleteUser() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+		err = uh.userUsecase.Delete(id)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+		return c.NoContent(http.StatusNoContent)
 	}
 }
